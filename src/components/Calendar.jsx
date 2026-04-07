@@ -22,6 +22,21 @@ const MONTH_IMAGES = [
   "/images/months/dec.png",
 ];
 
+const HOLIDAYS = {
+  "0-26": "Republic Day",
+  "1-19": "Shivaji Jayanti",
+  "2-25": "Holi",
+  "3-14": "Dr. Ambedkar Jayanti",
+  "3-18": "Good Friday",
+  "4-1": "Labour Day",
+  "7-15": "Independence Day",
+  "7-26": "Janmashtami",
+  "9-2": "Gandhi Jayanti",
+  "9-20": "Dussehra",
+  "10-1": "Diwali",
+  "11-25": "Christmas",
+};
+
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate();
 }
@@ -32,6 +47,7 @@ function getFirstDayOfMonth(year, month) {
 
 export default function Calendar() {
   const today = new Date();
+
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [startDate, setStartDate] = useState(null);
@@ -40,10 +56,16 @@ export default function Calendar() {
   const [notes, setNotes] = useState("");
   const [savedNotes, setSavedNotes] = useState({});
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [dark, setDark] = useState(false);
+  const [tooltip, setTooltip] = useState(null);
+  const [noteSaved, setNoteSaved] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("calendar-notes");
     if (stored) setSavedNotes(JSON.parse(stored));
+
+    const theme = localStorage.getItem("calendar-theme");
+    if (theme === "dark") setDark(true);
   }, []);
 
   useEffect(() => {
@@ -57,39 +79,60 @@ export default function Calendar() {
     const updated = { ...savedNotes, [key]: notes };
     setSavedNotes(updated);
     localStorage.setItem("calendar-notes", JSON.stringify(updated));
+    setNoteSaved(true);
+    setTimeout(() => setNoteSaved(false), 2000);
   };
 
+  const toggleTheme = () => {
+    setDark(d => {
+      localStorage.setItem("calendar-theme", !d ? "dark" : "light");
+      return !d;
+    });
+  };
+
+  const getHoliday = (day) => HOLIDAYS[`${currentMonth}-${day}`];
+
   const prevMonth = () => {
-    if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1); }
-    else setCurrentMonth(m => m - 1);
-    setStartDate(null); setEndDate(null);
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(y => y - 1);
+    } else setCurrentMonth(m => m - 1);
+
+    setStartDate(null);
+    setEndDate(null);
   };
 
   const nextMonth = () => {
-    if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(y => y + 1); }
-    else setCurrentMonth(m => m + 1);
-    setStartDate(null); setEndDate(null);
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(y => y + 1);
+    } else setCurrentMonth(m => m + 1);
+
+    setStartDate(null);
+    setEndDate(null);
   };
 
   const handleDayClick = (day) => {
     const clicked = new Date(currentYear, currentMonth, day);
+
     if (!startDate || (startDate && endDate)) {
-      setStartDate(clicked); setEndDate(null);
+      setStartDate(clicked);
+      setEndDate(null);
     } else {
-      if (clicked < startDate) { setStartDate(clicked); setEndDate(null); }
-      else setEndDate(clicked);
+      if (clicked < startDate) {
+        setStartDate(clicked);
+        setEndDate(null);
+      } else setEndDate(clicked);
     }
   };
 
-  const isStart = (day) => {
-    if (!startDate) return false;
-    return new Date(currentYear, currentMonth, day).toDateString() === startDate.toDateString();
-  };
+  const isStart = (day) =>
+    startDate &&
+    new Date(currentYear, currentMonth, day).toDateString() === startDate.toDateString();
 
-  const isEnd = (day) => {
-    if (!endDate) return false;
-    return new Date(currentYear, currentMonth, day).toDateString() === endDate.toDateString();
-  };
+  const isEnd = (day) =>
+    endDate &&
+    new Date(currentYear, currentMonth, day).toDateString() === endDate.toDateString();
 
   const isInRange = (day) => {
     const d = new Date(currentYear, currentMonth, day);
@@ -98,9 +141,8 @@ export default function Calendar() {
     return d > startDate && d < end;
   };
 
-  const isToday = (day) => {
-    return new Date(currentYear, currentMonth, day).toDateString() === today.toDateString();
-  };
+  const isToday = (day) =>
+    new Date(currentYear, currentMonth, day).toDateString() === today.toDateString();
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
@@ -116,71 +158,100 @@ export default function Calendar() {
     : "Click a day to start";
 
   return (
-    <div className="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col">
-      
-      <div className="relative w-full h-60 md:h-80 flex-shrink-0 bg-gray-200 overflow-hidden">
+    <div className={`w-full max-w-5xl mx-auto rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden flex flex-col transition-colors duration-300 ${dark ? "bg-gray-900" : "bg-white"}`}>
+
+      {/* HEADER */}
+      <div className="relative w-full h-60 md:h-80 overflow-hidden">
+
         <img
           key={currentMonth}
           src={MONTH_IMAGES[currentMonth]}
           alt={MONTHS[currentMonth]}
           onLoad={() => setImgLoaded(true)}
-          className={`
-            w-full h-full object-cover object-center
-            transition-all duration-700
-            ${imgLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105"}
-          `}
+          className={`w-full h-full object-cover transition-all duration-700 ${imgLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105"}`}
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
 
-        <div className="absolute top-0 left-0 right-0 flex justify-around items-center px-6 h-6 bg-black/30 z-10">
+        <div className="absolute top-0 left-0 right-0 flex justify-around items-center px-6 h-6 bg-black/30">
           {Array.from({ length: 18 }).map((_, i) => (
-            <div key={i} className="w-3.5 h-3.5 rounded-full border-2 border-white/80 bg-white/40" />
+            <div key={`ring-${i}`} className="w-3.5 h-3.5 rounded-full border-2 border-white/80 bg-white/40" />
           ))}
         </div>
 
-        <div className="absolute bottom-4 right-4 z-10 text-right">
-          <div className="text-[10px] tracking-widest text-white/70">
+        {/* THEME BUTTON */}
+        <button
+          onClick={toggleTheme}
+          className="absolute top-1 right-4 z-20 bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 rounded-full w-9 h-9 flex items-center justify-center shadow-sm transition-all duration-200"
+        >
+          {dark ? "☀️" : "🌙"}
+        </button>
+
+        <div className="absolute bottom-5 right-5 text-right text-white">
+          <div className="text-[10px] tracking-widest opacity-70">
             {currentYear}
           </div>
-          <div className="text-2xl md:text-3xl font-extrabold text-white leading-tight">
+          <div className="text-2xl md:text-3xl font-bold leading-none">
             {MONTHS[currentMonth].toUpperCase()}
           </div>
         </div>
 
         <button onClick={prevMonth}
-          className="absolute left-3 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-800 rounded-full w-9 h-9 flex items-center justify-center shadow font-bold text-lg transition">
+          className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 rounded-full w-9 h-9 flex items-center justify-center">
           ‹
         </button>
 
         <button onClick={nextMonth}
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-800 rounded-full w-9 h-9 flex items-center justify-center shadow font-bold text-lg transition">
+          className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 rounded-full w-9 h-9 flex items-center justify-center">
           ›
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row flex-1 min-h-0 gap-2">
+      {/* BODY */}
+      <div className="flex flex-col md:flex-row">
 
-        <div className="md:w-56 flex-shrink-0 bg-gray-50 border-b md:border-b-0 md:border-r border-gray-200 p-4 flex flex-col gap-3">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Notes</h3>
-          <div className="text-xs text-blue-500 bg-blue-50 rounded-lg px-2 py-1 leading-tight">{rangeText}</div>
+        {/* NOTES */}
+        <div className={`md:w-56 p-4 flex flex-col gap-3 ${dark ? "bg-gray-800" : "bg-white/70 backdrop-blur-md shadow-inner"}`}>
+          <h3 className="text-xs font-bold text-gray-400 uppercase">Notes</h3>
+          <div className="text-xs text-blue-500 bg-blue-50 rounded px-2 py-1">{rangeText}</div>
+
           <textarea
-            className="flex-1 min-h-24 resize-none text-sm text-gray-700 bg-white border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className={`flex-1 min-h-24 text-sm border rounded-xl p-3 outline-none ${
+              dark
+                ? "bg-gray-900 text-white border-gray-700"
+                : "bg-white text-gray-800 border-gray-200"
+            }`}
             placeholder={`Notes for ${MONTHS[currentMonth]}...`}
             value={notes}
-            onChange={e => setNotes(e.target.value)}
+            onChange={(e) => setNotes(e.target.value)}
           />
+
           <button
             onClick={saveNote}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 rounded-xl transition">
-            Save Note ✓
+            className={`text-white text-xs py-2 rounded-xl ${noteSaved ? "bg-green-500" : "bg-blue-600"}`}>
+            {noteSaved ? "Saved! ✓" : "Save Note"}
           </button>
         </div>
 
-        <div className="flex-1 p-5 overflow-auto">
+        {/* CALENDAR */}
+        <div
+          className={`
+            flex-1 p-6 rounded-2xl backdrop-blur-md transition-colors duration-300
+            ${dark ? "bg-gray-800/80 text-white" : "bg-white/70 text-black"}
+          `}
+        >
           <div className="grid grid-cols-7 mb-2">
-            {DAYS.map(d => (
-              <div key={d} className={`text-center text-xs font-semibold py-1 ${d === "Sun" || d === "Sat" ? "text-blue-500" : "text-gray-400"}`}>
+            {DAYS.map((d) => (
+              <div
+                key={`day-${d}`}
+                className={`text-center text-xs font-semibold ${
+                  d === "Sun" || d === "Sat"
+                    ? "text-blue-500"
+                    : dark
+                    ? "text-gray-400"
+                    : "text-gray-500"
+                }`}
+              >
                 {d}
               </div>
             ))}
@@ -188,33 +259,49 @@ export default function Calendar() {
 
           <div className="grid grid-cols-7 gap-y-1">
             {cells.map((day, idx) => {
-              if (!day) return <div key={`e-${idx}`} className="h-11" />;
-              const start = isStart(day);
-              const end = isEnd(day);
-              const inRange = isInRange(day);
-              const tod = isToday(day);
+              if (!day) {
+                return <div key={`empty-${idx}`} className="h-11" />;
+              }
+
+              const uniqueKey = `${currentYear}-${currentMonth}-${day}`;
 
               return (
                 <div
-                  key={day}
+                  key={uniqueKey}
                   onClick={() => handleDayClick(day)}
-                  onMouseEnter={() => !endDate && startDate && setHoverDate(new Date(currentYear, currentMonth, day))}
-                  onMouseLeave={() => setHoverDate(null)}
-                  className={`
-                    h-11 flex items-center justify-center text-sm font-medium cursor-pointer select-none transition-all
-                    ${start ? "bg-blue-600 text-white rounded-l-full" : ""}
-                    ${end ? "bg-blue-600 text-white rounded-r-full" : ""}
-                    ${inRange ? "bg-blue-100 text-blue-700" : ""}
-                    ${!start && !end && !inRange ? "hover:bg-gray-100 rounded-full" : ""}
-                    ${tod && !start && !end ? "ring-2 ring-blue-500 rounded-full font-bold" : ""}
-                  `}
+                  onMouseEnter={() => {
+                    if (!endDate && startDate)
+                      setHoverDate(new Date(currentYear, currentMonth, day));
+                    const h = getHoliday(day);
+                    if (h) setTooltip({ day, name: h });
+                  }}
+                  onMouseLeave={() => {
+                    setHoverDate(null);
+                    setTooltip(null);
+                  }}
+                  className={`relative h-11 flex items-center justify-center text-sm cursor-pointer rounded-full transition-all ${
+                    dark
+                      ? "hover:bg-gray-700"
+                      : "hover:bg-gray-100/80 hover:shadow-sm"
+                  }`}
                 >
                   {day}
+
+                  {getHoliday(day) && (
+                    <span className="absolute bottom-1 w-1.5 h-1.5 bg-amber-400 rounded-full" />
+                  )}
+
+                  {tooltip?.day === day && (
+                    <div className="absolute bottom-full mb-2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded">
+                      🎉 {getHoliday(day)}
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
         </div>
+
       </div>
     </div>
   );
