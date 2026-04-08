@@ -168,6 +168,7 @@ export default function Calendar() {
           src={MONTH_IMAGES[currentMonth]}
           alt={MONTHS[currentMonth]}
           onLoad={() => setImgLoaded(true)}
+          ref={(img) => { if (img?.complete) setImgLoaded(true); }}
           className={`w-full h-full object-cover transition-all duration-700 ${imgLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105"}`}
         />
 
