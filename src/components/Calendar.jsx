@@ -279,11 +279,13 @@ export default function Calendar() {
                     setHoverDate(null);
                     setTooltip(null);
                   }}
-                  className={`relative h-11 flex items-center justify-center text-sm cursor-pointer rounded-full transition-all ${
-                    dark
-                      ? "hover:bg-gray-700"
-                      : "hover:bg-gray-100/80 hover:shadow-sm"
-                  }`}
+                  className={`relative h-11 flex items-center justify-center text-sm cursor-pointer transition-all
+                    ${isStart(day) ? "bg-blue-600 text-white rounded-l-full" : ""}
+                    ${isEnd(day) ? "bg-blue-600 text-white rounded-r-full" : ""}
+                    ${isInRange(day) ? "bg-blue-100 text-blue-700" : ""}
+                    ${!isStart(day) && !isEnd(day) && !isInRange(day) ? `rounded-full ${dark ? "hover:bg-gray-700" : "hover:bg-gray-100/80"}` : ""}
+                    ${isToday(day) && !isStart(day) && !isEnd(day) ? "ring-2 ring-blue-500 font-bold rounded-full" : ""}
+                  `}
                 >
                   {day}
 

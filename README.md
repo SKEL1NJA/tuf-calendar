@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🗓️ TUF Calendar
 
-## Getting Started
+An interactive wall calendar component built with **Next.js** and **Tailwind CSS** as part of the takeUforward Frontend Engineering Challenge.
 
-First, run the development server:
+## ✨ Features
+
+- **Wall Calendar Aesthetic** — Hero image for each month with spiral binding detail and gradient overlay
+- **Date Range Selector** — Click to set start & end dates with visual highlight for in-between days and hover preview
+- **Integrated Notes** — Per-month notes saved to `localStorage`, persists across sessions
+- **Indian Holiday Markers** — Orange dots on public holidays with tooltip on hover
+- **Dark / Light Theme** — Toggle with one click, preference saved to `localStorage`
+- **Smooth Transitions** — Hero image fades in with a subtle zoom effect on month change
+- **Fully Responsive** — Stacks vertically on mobile, side-by-side on desktop
+
+## 🛠️ Tech Stack
+
+- [Next.js 15](https://nextjs.org/) (App Router)
+- [Tailwind CSS v4](https://tailwindcss.com/)
+- `localStorage` for client-side data persistence
+- No backend, no database — purely frontend
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm
+
+### Installation
 
 ```bash
+git clone https://github.com/SKEL1NJA/tuf-calendar.git
+cd tuf-calendar
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 📖 Design Decisions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Next.js App Router** was chosen for modern React patterns and easy Vercel deployment
+- **Local images** in `public/images/months/` for reliable hero images without external dependencies
+- **localStorage** used for notes and theme persistence — no backend needed per task requirements
+- **Range selection UX** mirrors Google Calendar — click start, click end, hover previews the range
+- **Component architecture** kept intentionally simple — single `Calendar.jsx` component for clarity and reviewability
 
-## Learn More
+## 📱 Responsive Design
 
-To learn more about Next.js, take a look at the following resources:
+- **Desktop**: Side-by-side layout with notes panel on the left and calendar grid on the right
+- **Mobile**: Stacked layout — hero image → notes → calendar grid
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎯 Bonus Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 🌙 Dark / Light mode toggle
+- 🎉 Indian public holiday markers with tooltips
+- 🖼️ Per-month hero images with fade + zoom transition
+- ✅ Save note confirmation feedback
