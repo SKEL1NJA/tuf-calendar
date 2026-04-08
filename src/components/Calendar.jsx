@@ -23,18 +23,35 @@ const MONTH_IMAGES = [
 ];
 
 const HOLIDAYS = {
-  "0-26": "Republic Day",
-  "1-19": "Shivaji Jayanti",
-  "2-25": "Holi",
-  "3-14": "Dr. Ambedkar Jayanti",
-  "3-18": "Good Friday",
-  "4-1": "Labour Day",
-  "7-15": "Independence Day",
-  "7-26": "Janmashtami",
-  "9-2": "Gandhi Jayanti",
-  "9-20": "Dussehra",
-  "10-1": "Diwali",
-  "11-25": "Christmas",
+  // 🇮🇳 Important National Days
+  "0-26": "Republic Day 🇮🇳",
+  "7-15": "Independence Day 🇮🇳",
+  "9-2": "Gandhi Jayanti 🇮🇳",
+
+  // 🎉 Festivals
+  "2-25": "Holi 🎨",
+  "3-18": "Good Friday ✝️",
+  "7-26": "Janmashtami 🦚",
+  "9-20": "Dussehra 🏹",
+  "10-1": "Diwali 🪔",
+  "11-25": "Christmas 🎄",
+
+  // 💻 TUF / Coding Relevant
+  "8-13": "Programmers Day 💻",              // Sept 13 (VERY IMPORTANT)
+  "5-1": "Internship Season Starts 🚀",     // June
+  "8-1": "Placement Season Begins 💼",      // September
+  "10-1": "Peak Grind Phase 🔥",            // November
+  "11-1": "Year-End Reflection 📚",         // December
+
+  // 🧠 Awareness / Developer Mindset
+  "1-11": "Women in Science 👩‍🔬",
+  "4-17": "Tech & Communication Day 🌐",
+  "9-10": "Mental Health Day 🧠",
+
+  // 🎯 Motivation / Journey-Based (TUF vibe)
+  "0-1": "New Year – Start Strong 💪",
+  "3-1": "Consistency Phase 📈",
+  "6-1": "Discipline Mode 🎯",
 };
 
 function getDaysInMonth(year, month) {

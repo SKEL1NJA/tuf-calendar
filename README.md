@@ -8,13 +8,34 @@ An interactive wall calendar component built with **Next.js** and **Tailwind CSS
 
 ## ✨ Features
 
-- **Wall Calendar Aesthetic** — Hero image for each month with spiral binding detail and gradient overlay
-- **Date Range Selector** — Click to set start & end dates with visual highlight for in-between days and hover preview
-- **Integrated Notes** — Per-month notes saved to `localStorage`, persists across sessions
-- **Indian Holiday Markers** — Orange dots on public holidays with tooltip on hover
-- **Dark / Light Theme** — Toggle with one click, preference saved to `localStorage`
-- **Smooth Transitions** — Hero image fades in with a subtle zoom effect on month change
-- **Fully Responsive** — Stacks vertically on mobile, side-by-side on desktop
+- **Wall Calendar Aesthetic** — Hero image for each month with spiral binding detail and gradient overlay  
+- **Contextual Monthly Themes** — Each month visually represents a stage in a coder’s journey (learning → consistency → grind → placements → achievement)  
+- **Date Range Selector** — Click to set start & end dates with visual highlight for in-between days and hover preview  
+- **Integrated Notes** — Per-month notes saved to `localStorage`, persists across sessions  
+- **Meaningful Event Markers** — Includes Indian public holidays + developer-centric milestones (Programmers Day 💻, Internship Season 🚀, Placement Season 💼, Grind Phases 🔥)  
+- **Dark / Light Theme** — Toggle with one click, preference saved to `localStorage`  
+- **Smooth Transitions** — Hero image fades in with a subtle zoom effect on month change  
+- **Branded Background Design** — Subtle gradient with developer-style grid overlay for a TUF-inspired aesthetic  
+- **Fully Responsive** — Stacks vertically on mobile, side-by-side on desktop  
+
+## 🗓️ Monthly Theme (Coder’s Journey)
+
+Each month’s hero image represents a stage in a developer’s journey — aligning with the mindset promoted by takeUforward:
+
+- **January** — Fresh start, setting up environment & goals 💻  
+- **February** — Beginning the learning journey 🌄  
+- **March** — Building consistency in practice 📈  
+- **April** — Growth and improvement phase 🌱  
+- **May** — Preparation intensifies 🔥  
+- **June** — Calm, focused learning ☀️  
+- **July** — Internship opportunities & real-world exposure 🚀  
+- **August** — Discipline and routine building 🎯  
+- **September** — Placement season begins 💼  
+- **October** — Late-night grind phase 🌃  
+- **November** — Peak preparation & consistency 🚧  
+- **December** — Reflection and achievement 🏆  
+
+This transforms the calendar from a simple date tool into a **visual representation of a coder’s yearly journey**.
 
 ## 🛠️ Tech Stack
 
