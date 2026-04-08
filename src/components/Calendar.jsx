@@ -63,9 +63,14 @@ export default function Calendar() {
   useEffect(() => {
     const stored = localStorage.getItem("calendar-notes");
     if (stored) setSavedNotes(JSON.parse(stored));
-
     const theme = localStorage.getItem("calendar-theme");
     if (theme === "dark") setDark(true);
+
+    // Preload all month images
+    MONTH_IMAGES.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
   }, []);
 
   useEffect(() => {
@@ -73,6 +78,16 @@ export default function Calendar() {
     setNotes(savedNotes[key] || "");
     setImgLoaded(false);
   }, [currentMonth, currentYear, savedNotes]);
+
+  // Preload adjacent months
+  useEffect(() => {
+    const nextMonth = (currentMonth + 1) % 12;
+    const prevMonth = (currentMonth - 1 + 12) % 12;
+    [nextMonth, prevMonth].forEach(m => {
+      const img = new Image();
+      img.src = MONTH_IMAGES[m];
+    });
+  }, [currentMonth]);
 
   const saveNote = () => {
     const key = `${currentYear}-${currentMonth}`;
@@ -97,7 +112,6 @@ export default function Calendar() {
       setCurrentMonth(11);
       setCurrentYear(y => y - 1);
     } else setCurrentMonth(m => m - 1);
-
     setStartDate(null);
     setEndDate(null);
   };
@@ -107,14 +121,12 @@ export default function Calendar() {
       setCurrentMonth(0);
       setCurrentYear(y => y + 1);
     } else setCurrentMonth(m => m + 1);
-
     setStartDate(null);
     setEndDate(null);
   };
 
   const handleDayClick = (day) => {
     const clicked = new Date(currentYear, currentMonth, day);
-
     if (!startDate || (startDate && endDate)) {
       setStartDate(clicked);
       setEndDate(null);
@@ -162,7 +174,6 @@ export default function Calendar() {
 
       {/* HEADER */}
       <div className="relative w-full h-60 md:h-80 overflow-hidden">
-
         <img
           key={currentMonth}
           src={MONTH_IMAGES[currentMonth]}
@@ -189,21 +200,18 @@ export default function Calendar() {
         </button>
 
         <div className="absolute bottom-5 right-5 text-right text-white">
-          <div className="text-[10px] tracking-widest opacity-70">
-            {currentYear}
-          </div>
+          <div className="text-[10px] tracking-widest opacity-70">{currentYear}</div>
           <div className="text-2xl md:text-3xl font-bold leading-none">
             {MONTHS[currentMonth].toUpperCase()}
           </div>
         </div>
 
         <button onClick={prevMonth}
-          className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 rounded-full w-9 h-9 flex items-center justify-center">
+          className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg shadow transition">
           ‹
         </button>
-
         <button onClick={nextMonth}
-          className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 rounded-full w-9 h-9 flex items-center justify-center">
+          className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg shadow transition">
           ›
         </button>
       </div>
@@ -215,44 +223,29 @@ export default function Calendar() {
         <div className={`md:w-56 p-4 flex flex-col gap-3 ${dark ? "bg-gray-800" : "bg-white/70 backdrop-blur-md shadow-inner"}`}>
           <h3 className="text-xs font-bold text-gray-400 uppercase">Notes</h3>
           <div className="text-xs text-blue-500 bg-blue-50 rounded px-2 py-1">{rangeText}</div>
-
           <textarea
-            className={`flex-1 min-h-24 text-sm border rounded-xl p-3 outline-none ${
-              dark
-                ? "bg-gray-900 text-white border-gray-700"
-                : "bg-white text-gray-800 border-gray-200"
+            className={`flex-1 min-h-24 text-sm border rounded-xl p-3 outline-none resize-none focus:ring-2 focus:ring-blue-400 ${
+              dark ? "bg-gray-900 text-white border-gray-700" : "bg-white text-gray-800 border-gray-200"
             }`}
             placeholder={`Notes for ${MONTHS[currentMonth]}...`}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
-
           <button
             onClick={saveNote}
-            className={`text-white text-xs py-2 rounded-xl ${noteSaved ? "bg-green-500" : "bg-blue-600"}`}>
+            className={`text-white text-xs font-bold py-2 rounded-xl transition ${noteSaved ? "bg-green-500" : "bg-blue-600 hover:bg-blue-700"}`}>
             {noteSaved ? "Saved! ✓" : "Save Note"}
           </button>
         </div>
 
-        {/* CALENDAR */}
-        <div
-          className={`
-            flex-1 p-6 rounded-2xl backdrop-blur-md transition-colors duration-300
-            ${dark ? "bg-gray-800/80 text-white" : "bg-white/70 text-black"}
-          `}
-        >
+        {/* CALENDAR GRID */}
+        <div className={`flex-1 p-6 transition-colors duration-300 ${dark ? "bg-gray-800/80 text-white" : "bg-white/70 text-black"}`}>
           <div className="grid grid-cols-7 mb-2">
             {DAYS.map((d) => (
-              <div
-                key={`day-${d}`}
+              <div key={`day-${d}`}
                 className={`text-center text-xs font-semibold ${
-                  d === "Sun" || d === "Sat"
-                    ? "text-blue-500"
-                    : dark
-                    ? "text-gray-400"
-                    : "text-gray-500"
-                }`}
-              >
+                  d === "Sun" || d === "Sat" ? "text-blue-500" : dark ? "text-gray-400" : "text-gray-500"
+                }`}>
                 {d}
               </div>
             ))}
@@ -260,42 +253,32 @@ export default function Calendar() {
 
           <div className="grid grid-cols-7 gap-y-1">
             {cells.map((day, idx) => {
-              if (!day) {
-                return <div key={`empty-${idx}`} className="h-11" />;
-              }
-
-              const uniqueKey = `${currentYear}-${currentMonth}-${day}`;
+              if (!day) return <div key={`empty-${idx}`} className="h-11" />;
 
               return (
                 <div
-                  key={uniqueKey}
+                  key={`${currentYear}-${currentMonth}-${day}`}
                   onClick={() => handleDayClick(day)}
                   onMouseEnter={() => {
-                    if (!endDate && startDate)
-                      setHoverDate(new Date(currentYear, currentMonth, day));
+                    if (!endDate && startDate) setHoverDate(new Date(currentYear, currentMonth, day));
                     const h = getHoliday(day);
                     if (h) setTooltip({ day, name: h });
                   }}
-                  onMouseLeave={() => {
-                    setHoverDate(null);
-                    setTooltip(null);
-                  }}
+                  onMouseLeave={() => { setHoverDate(null); setTooltip(null); }}
                   className={`relative h-11 flex items-center justify-center text-sm cursor-pointer transition-all
                     ${isStart(day) ? "bg-blue-600 text-white rounded-l-full" : ""}
                     ${isEnd(day) ? "bg-blue-600 text-white rounded-r-full" : ""}
                     ${isInRange(day) ? "bg-blue-100 text-blue-700" : ""}
-                    ${!isStart(day) && !isEnd(day) && !isInRange(day) ? `rounded-full ${dark ? "hover:bg-gray-700" : "hover:bg-gray-100/80"}` : ""}
+                    ${!isStart(day) && !isEnd(day) && !isInRange(day) ? `rounded-full ${dark ? "hover:bg-gray-700" : "hover:bg-gray-100"}` : ""}
                     ${isToday(day) && !isStart(day) && !isEnd(day) ? "ring-2 ring-blue-500 font-bold rounded-full" : ""}
                   `}
                 >
                   {day}
-
                   {getHoliday(day) && (
-                    <span className="absolute bottom-1 w-1.5 h-1.5 bg-amber-400 rounded-full" />
+                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-amber-400 rounded-full" />
                   )}
-
-                  {tooltip?.day === day && (
-                    <div className="absolute bottom-full mb-2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded">
+                  {tooltip?.day === day && getHoliday(day) && (
+                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-50 pointer-events-none">
                       🎉 {getHoliday(day)}
                     </div>
                   )}
@@ -304,7 +287,6 @@ export default function Calendar() {
             })}
           </div>
         </div>
-
       </div>
     </div>
   );
