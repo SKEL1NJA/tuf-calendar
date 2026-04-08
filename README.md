@@ -2,6 +2,10 @@
 
 An interactive wall calendar component built with **Next.js** and **Tailwind CSS** as part of the takeUforward Frontend Engineering Challenge.
 
+## 🌐 Live Demo
+
+[https://tuf-calendar.vercel.app](https://tuf-calendar.vercel.app)
+
 ## ✨ Features
 
 - **Wall Calendar Aesthetic** — Hero image for each month with spiral binding detail and gradient overlay
